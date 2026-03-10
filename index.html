@@ -1,97 +1,483 @@
-<section id="test">
-<div class="card">
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Тест по работам на высоте</title>
 
-<div class="script h-script">Проверка знаний</div>
+  <style>
+    :root{
+      --bg1:#fff7fa;
+      --bg2:#fffefe;
+      --ink:#1f1a1c;
+      --muted:#6f6268;
+      --accent:#d7a8b7;
+      --accent2:#bf8fa0;
+      --cardTop:rgba(255,255,255,.88);
+      --cardBot:rgba(255,255,255,.68);
+      --border:rgba(255,255,255,.74);
+      --shadow:0 18px 48px rgba(0,0,0,.10);
+      --shadow2:0 14px 30px rgba(215,168,183,.24);
+      --ok:#3f8f5a;
+      --bad:#c05757;
+    }
 
-<img src="./qr.png" style="width:220px;margin:20px auto;display:block;" alt="QR код">
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: Georgia, "Times New Roman", serif;
+      color:var(--ink);
+      background:
+        radial-gradient(900px 700px at 50% 0%, rgba(215,168,183,.16), rgba(255,255,255,0) 60%),
+        radial-gradient(900px 700px at 50% 110%, rgba(191,143,160,.10), rgba(255,255,255,0) 55%),
+        linear-gradient(to bottom, var(--bg1), var(--bg2));
+      overflow-x:hidden;
+    }
 
-<p class="p" style="text-align:center;">
-Отсканируйте QR код или пройдите тест ниже
-</p>
+    .wrap{
+      width:min(920px, 92vw);
+      margin:0 auto;
+      padding:32px 0 60px;
+    }
 
-<form id="quiz">
+    .card{
+      position:relative;
+      background:linear-gradient(180deg,var(--cardTop),var(--cardBot));
+      border:1px solid var(--border);
+      border-radius:30px;
+      box-shadow:var(--shadow);
+      padding:28px 22px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      overflow:hidden;
+    }
 
-<div class="mini">
-<div class="t">1. Дайте определение термину "Работы на высоте"</div>
+    .card::before{
+      content:"";
+      position:absolute;
+      inset:-35% -25%;
+      background:radial-gradient(circle at 30% 20%, rgba(215,168,183,.18), rgba(255,255,255,0) 58%);
+      pointer-events:none;
+    }
 
-<label><input type="radio" name="q1" value="a"> а) работа, при выполнении которой рабочий находится на высоте 1,3 м и более...</label><br>
-<label><input type="radio" name="q1" value="b"> б) работа на высоте 1,5 м...</label><br>
-<label><input type="radio" name="q1" value="c"> в) работа на высоте 1,8 м...</label>
+    .title{
+      position:relative;
+      z-index:1;
+      text-align:center;
+      font-size:clamp(32px, 6vw, 54px);
+      line-height:1.05;
+      color:var(--accent2);
+      margin:0 0 10px;
+      font-weight:700;
+    }
 
-</div>
+    .subtitle{
+      position:relative;
+      z-index:1;
+      text-align:center;
+      color:var(--muted);
+      font-size:20px;
+      line-height:1.7;
+      margin:0 auto 18px;
+      max-width:760px;
+    }
 
+    .top{
+      position:relative;
+      z-index:1;
+      display:grid;
+      grid-template-columns: 260px 1fr;
+      gap:24px;
+      align-items:center;
+      margin-top:22px;
+    }
 
-<div class="mini">
-<div class="t">2. С какого возраста работник допускается на выполнение работ на высоте?</div>
+    .qr-box{
+      background:rgba(255,255,255,.6);
+      border:1px solid rgba(215,168,183,.25);
+      border-radius:24px;
+      padding:16px;
+      box-shadow:0 14px 32px rgba(0,0,0,.08);
+      text-align:center;
+    }
 
-<label><input type="radio" name="q2" value="a"> а) с 18 лет</label><br>
-<label><input type="radio" name="q2" value="b"> б) с 21 года</label><br>
-<label><input type="radio" name="q2" value="c"> в) с 16 лет</label>
+    .qr-box img{
+      width:100%;
+      max-width:220px;
+      display:block;
+      margin:0 auto;
+      border-radius:16px;
+      box-shadow:0 12px 28px rgba(0,0,0,.10);
+      background:#fff;
+    }
 
-</div>
+    .qr-note{
+      margin-top:12px;
+      color:var(--muted);
+      font-size:17px;
+      line-height:1.7;
+    }
 
+    .info{
+      background:rgba(255,255,255,.34);
+      border:1px solid rgba(215,168,183,.24);
+      border-radius:24px;
+      padding:18px 18px;
+    }
 
-<div class="mini">
-<div class="t">3. Какие СИЗ должны использоваться?</div>
+    .info h2{
+      margin:0 0 10px;
+      font-size:26px;
+      color:#51464b;
+    }
 
-<label><input type="radio" name="q3" value="a"> а) каски, сигнальные жилеты, страховочные пояса</label><br>
-<label><input type="radio" name="q3" value="b"> б) перчатки и очки</label><br>
-<label><input type="radio" name="q3" value="c"> в) диэлектрические боты</label>
+    .info p{
+      margin:0;
+      font-size:19px;
+      line-height:1.9;
+      color:#433a3e;
+    }
 
-</div>
+    .quiz{
+      position:relative;
+      z-index:1;
+      margin-top:26px;
+      display:grid;
+      gap:18px;
+    }
 
+    .question{
+      background:rgba(255,255,255,.3);
+      border:1px solid rgba(215,168,183,.22);
+      border-radius:22px;
+      padding:18px 18px 14px;
+      box-shadow:0 10px 24px rgba(0,0,0,.05);
+      transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
 
-<div class="mini">
-<div class="t">4. Разрешается ли работать на приставных лестницах?</div>
+    .question:hover{
+      transform:translateY(-2px);
+      box-shadow:0 14px 28px rgba(215,168,183,.16);
+      border-color:rgba(191,143,160,.34);
+    }
 
-<label><input type="radio" name="q4" value="a"> а) не разрешается</label><br>
-<label><input type="radio" name="q4" value="b"> б) разрешается с согласия руководителя</label><br>
-<label><input type="radio" name="q4" value="c"> в) не разрешается в любых случаях</label>
+    .q-title{
+      font-size:22px;
+      line-height:1.6;
+      margin:0 0 12px;
+      color:#2c2327;
+      font-weight:700;
+    }
 
-</div>
+    .option{
+      display:block;
+      margin:8px 0;
+      padding:12px 14px;
+      border-radius:14px;
+      cursor:pointer;
+      transition:background .2s ease, transform .15s ease;
+      font-size:18px;
+      line-height:1.7;
+      color:#3d3337;
+    }
 
+    .option:hover{
+      background:rgba(215,168,183,.12);
+      transform:translateX(2px);
+    }
 
-<div class="mini">
-<div class="t">5. Что обязательно оформить для работ на высоте?</div>
+    .option input{
+      transform:scale(1.15);
+      margin-right:10px;
+      accent-color:var(--accent2);
+    }
 
-<label><input type="radio" name="q5" value="a"> а) наряд-допуск</label><br>
-<label><input type="radio" name="q5" value="b"> б) акт ППР</label><br>
-<label><input type="radio" name="q5" value="c"> в) письменное задание</label>
+    .actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      justify-content:center;
+      margin-top:8px;
+    }
 
-</div>
+    .btn{
+      border:none;
+      border-radius:999px;
+      padding:15px 28px;
+      cursor:pointer;
+      background:linear-gradient(135deg, rgba(215,168,183,.96), rgba(191,143,160,.96));
+      color:#fff;
+      font-size:14px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      box-shadow:var(--shadow2);
+      transition:transform .15s ease, filter .15s ease;
+    }
 
-<br>
+    .btn:hover{filter:brightness(1.05)}
+    .btn:active{transform:scale(.985)}
 
-<button type="button" class="btn" onclick="checkQuiz()">Проверить результат</button>
+    .btn.secondary{
+      background:linear-gradient(135deg, rgba(255,255,255,.82), rgba(255,255,255,.58));
+      color:#43383d;
+      border:1px solid rgba(215,168,183,.25);
+      box-shadow:0 10px 24px rgba(0,0,0,.06);
+    }
 
-</form>
+    .result{
+      margin-top:22px;
+      border-radius:22px;
+      padding:18px 16px;
+      text-align:center;
+      background:rgba(255,255,255,.45);
+      border:1px solid rgba(215,168,183,.24);
+      min-height:84px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-direction:column;
+      gap:8px;
+    }
 
-<div id="result" style="
-margin-top:20px;
-font-size:24px;
-text-align:center;
-font-weight:bold;
-"></div>
+    .result-main{
+      font-size:30px;
+      font-weight:700;
+      color:var(--accent2);
+      line-height:1.2;
+    }
 
-</div>
-</section>
+    .result-sub{
+      font-size:19px;
+      color:var(--muted);
+      line-height:1.6;
+    }
 
+    .score-good{ color:var(--ok); }
+    .score-bad{ color:var(--bad); }
 
-<script>
+    .footer-note{
+      margin-top:18px;
+      text-align:center;
+      color:var(--muted);
+      font-size:17px;
+      line-height:1.8;
+    }
 
-function checkQuiz(){
+    @media (max-width: 760px){
+      .top{
+        grid-template-columns:1fr;
+      }
+      .qr-box img{
+        max-width:210px;
+      }
+      .q-title{
+        font-size:20px;
+      }
+      .option{
+        font-size:17px;
+      }
+      .result-main{
+        font-size:26px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <h1 class="title">Закрепим знания</h1>
+      <p class="subtitle">
+        Отсканируйте QR-код или пройдите тест по теме работ на высоте.
+        После заполнения система покажет, сколько правильных ответов вы дали.
+      </p>
 
-let correct = 0
+      <div class="top">
+        <div class="qr-box">
+          <img src="./qr.png" alt="QR код">
+          <div class="qr-note">Отсканируйте QR-код для перехода по ссылке</div>
+        </div>
 
-if(document.querySelector('input[name="q1"]:checked')?.value === "a") correct++
-if(document.querySelector('input[name="q2"]:checked')?.value === "a") correct++
-if(document.querySelector('input[name="q3"]:checked')?.value === "a") correct++
-if(document.querySelector('input[name="q4"]:checked')?.value === "c") correct++
-if(document.querySelector('input[name="q5"]:checked')?.value === "a") correct++
+        <div class="info">
+          <h2>Тест по охране труда</h2>
+          <p>
+            Выберите по одному правильному варианту ответа в каждом вопросе,
+            затем нажмите кнопку <b>«Проверить результат»</b>.
+            Внизу отобразится итог: сколько правильных ответов из 5 вы набрали.
+          </p>
+        </div>
+      </div>
 
-document.getElementById("result").innerHTML =
-"Ваш результат: <b>" + correct + " из 5</b> правильных ответов"
+      <form id="quiz" class="quiz">
+        <div class="question">
+          <div class="q-title">1. Дайте определение термину "Работы на высоте"</div>
 
-}
+          <label class="option">
+            <input type="radio" name="q1" value="a">
+            а) работа, при выполнении которой рабочий находится на высоте (или на глубине) 1,3 метров и более от поверхности грунта, перекрытия или рабочего настила и на расстоянии менее 2 метров от границы перепада по высоте;
+          </label>
 
-</script>
+          <label class="option">
+            <input type="radio" name="q1" value="b">
+            б) работа, при выполнении которой рабочий находится на высоте (или на глубине) 1,5 метров и более от поверхности грунта, перекрытия или рабочего настила и на расстоянии менее 3 метров от границы перепада по высоте;
+          </label>
+
+          <label class="option">
+            <input type="radio" name="q1" value="c">
+            в) работа, при выполнении которой рабочий находится на высоте 1,8 метров и более от поверхности грунта, перекрытия или рабочего настила;
+          </label>
+        </div>
+
+        <div class="question">
+          <div class="q-title">2. С какого возраста работник допускается на выполнения работ на высоте?</div>
+
+          <label class="option">
+            <input type="radio" name="q2" value="a">
+            а) с 18 лет;
+          </label>
+
+          <label class="option">
+            <input type="radio" name="q2" value="b">
+            б) с 21 года;
+          </label>
+
+          <label class="option">
+            <input type="radio" name="q2" value="c">
+            в) с 16 лет;
+          </label>
+        </div>
+
+        <div class="question">
+          <div class="q-title">3. Какие СИЗ должны использоваться при выполнении работ на высоте?</div>
+
+          <label class="option">
+            <input type="radio" name="q3" value="a">
+            а) Защитные каски, сигнальные жилеты, страховочные пояса и удерживающие конструкции;
+          </label>
+
+          <label class="option">
+            <input type="radio" name="q3" value="b">
+            б) Защитные перчатки, защитные очки и другие;
+          </label>
+
+          <label class="option">
+            <input type="radio" name="q3" value="c">
+            в) Диэлектрические боты, перчатки и сигнальный жилет;
+          </label>
+        </div>
+
+        <div class="question">
+          <div class="q-title">4. Разрешается ли проводить работы на высоте на приставных лестницах?</div>
+
+          <label class="option">
+            <input type="radio" name="q4" value="a">
+            а) не разрешается;
+          </label>
+
+          <label class="option">
+            <input type="radio" name="q4" value="b">
+            б) разрешается с согласия руководителя работ;
+          </label>
+
+          <label class="option">
+            <input type="radio" name="q4" value="c">
+            в) не разрешается в любых случаях;
+          </label>
+        </div>
+
+        <div class="question">
+          <div class="q-title">5. Что необходимо оформить обязательно для выполнения работ на высоте?</div>
+
+          <label class="option">
+            <input type="radio" name="q5" value="a">
+            а) наряд - допуска;
+          </label>
+
+          <label class="option">
+            <input type="radio" name="q5" value="b">
+            б) акт плана производства работ;
+          </label>
+
+          <label class="option">
+            <input type="radio" name="q5" value="c">
+            в) задание в письменной форме на выполнение работ;
+          </label>
+        </div>
+
+        <div class="actions">
+          <button type="button" class="btn" onclick="checkQuiz()">Проверить результат</button>
+          <button type="button" class="btn secondary" onclick="resetQuiz()">Сбросить ответы</button>
+        </div>
+      </form>
+
+      <div id="result" class="result">
+        <div class="result-main">Ваш результат появится здесь</div>
+        <div class="result-sub">Ответьте на все вопросы и нажмите кнопку проверки</div>
+      </div>
+
+      <div class="footer-note">
+        Правильные ответы: 1 — а, 2 — а, 3 — а, 4 — в, 5 — а
+      </div>
+    </section>
+  </main>
+
+  <script>
+    function checkQuiz(){
+      const answers = {
+        q1: "a",
+        q2: "a",
+        q3: "a",
+        q4: "c",
+        q5: "a"
+      };
+
+      let score = 0;
+      let answered = 0;
+
+      Object.keys(answers).forEach(key => {
+        const checked = document.querySelector(`input[name="${key}"]:checked`);
+        if (checked) {
+          answered++;
+          if (checked.value === answers[key]) score++;
+        }
+      });
+
+      const result = document.getElementById("result");
+
+      if (answered < 5) {
+        result.innerHTML = `
+          <div class="result-main score-bad">Вы ответили не на все вопросы</div>
+          <div class="result-sub">Заполнено: ${answered} из 5. Пожалуйста, выберите ответы в каждом вопросе.</div>
+        `;
+        return;
+      }
+
+      let message = "";
+      if (score === 5) {
+        message = "Отличный результат!";
+      } else if (score >= 4) {
+        message = "Очень хорошо!";
+      } else if (score >= 3) {
+        message = "Неплохо, но есть ошибки.";
+      } else {
+        message = "Стоит повторить материал.";
+      }
+
+      result.innerHTML = `
+        <div class="result-main ${score >= 4 ? 'score-good' : 'score-bad'}">
+          Ваш результат: ${score} из 5
+        </div>
+        <div class="result-sub">${message}</div>
+      `;
+    }
+
+    function resetQuiz(){
+      document.getElementById("quiz").reset();
+      document.getElementById("result").innerHTML = `
+        <div class="result-main">Ваш результат появится здесь</div>
+        <div class="result-sub">Ответьте на все вопросы и нажмите кнопку проверки</div>
+      `;
+    }
+  </script>
+</body>
+</html>
