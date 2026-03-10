@@ -13,7 +13,6 @@
   --muted:#6e7f8d;
   --blue:#4ea3d8;
   --blue2:#3f8ec0;
-  --blueSoft:#eaf6ff;
   --line:#dbeaf5;
   --card:#ffffff;
   --shadow:0 24px 60px rgba(29,57,84,.10);
@@ -115,7 +114,7 @@ h1{
   position:relative;
   z-index:1;
   display:grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns:280px 1fr;
   gap:22px;
   align-items:stretch;
   margin-bottom:28px;
@@ -163,7 +162,7 @@ h1{
 }
 
 .infoBox{
-  padding:20px 20px;
+  padding:20px;
   display:flex;
   flex-direction:column;
   justify-content:center;
@@ -204,7 +203,7 @@ h1{
   border-radius:14px;
   font-size:16px;
   outline:none;
-  transition:border-color .2s ease, box-shadow .2s ease, transform .2s ease;
+  transition:border-color .2s ease, box-shadow .2s ease;
 }
 
 .fioInput:focus{
@@ -423,7 +422,7 @@ h1{
   line-height:1.7;
 }
 
-@media (max-width: 820px){
+@media (max-width:820px){
   .top-grid{
     grid-template-columns:1fr;
   }
@@ -454,7 +453,7 @@ h1{
       <h1>Закрепим знания</h1>
       <div class="subtitle">
         Пройдите тест по теме работ на высоте. Укажите ФИО, выберите ответы и нажмите кнопку проверки.
-        После проверки будут показаны правильные и неправильные варианты, а результат автоматически отправится в Google Sheets.
+        После проверки будут показаны правильные и неправильные варианты, а результат отправится в Google Sheets.
       </div>
     </div>
 
@@ -469,8 +468,8 @@ h1{
         <h2>Тест по работам на высоте</h2>
         <p>
           В тесте 5 вопросов. Поле ФИО обязательно для заполнения.
-          После нажатия на кнопку вы увидите:
-          количество правильных ответов, галочки и крестики, а также подсветку верных и неверных вариантов.
+          После нажатия на кнопку вы увидите количество правильных ответов, галочки и крестики,
+          а также подсветку верных и неверных вариантов.
         </p>
       </div>
     </div>
@@ -614,8 +613,7 @@ h1{
     </div>
 
     <div class="note">
-      Для сохранения результатов в Google Sheets подставьте ваш URL Apps Script в переменную
-      <b>scriptURL</b> внутри кода.
+      Результат будет отправляться в Google Sheets после нажатия кнопки проверки.
     </div>
   </div>
 </div>
@@ -629,7 +627,6 @@ const answers = {
   q5: "a"
 };
 
-// ВСТАВЬТЕ СЮДА URL ВАШЕГО DEPLOYED GOOGLE APPS SCRIPT WEB APP
 const scriptURL = "https://script.google.com/macros/s/AKfycbwmumlXr_Xe409lbY2w18l5QXDDB-lrHBSwLkA_Jxv_6RTRGw2FNlBkm8IdjbCF0KbYuw/exec";
 
 const submitBtn = document.getElementById("submitBtn");
@@ -641,18 +638,37 @@ const form = document.getElementById("quizForm");
 submitBtn.addEventListener("click", checkQuiz);
 resetBtn.addEventListener("click", resetQuiz);
 
-function clearHighlights(){
+function clearHighlights() {
   document.querySelectorAll(".option").forEach(option => {
     option.classList.remove("correct", "wrong", "missed");
   });
 }
 
-function checkQuiz(){
+function restoreMarks() {
+  document.querySelectorAll('[data-question="q1"] .option').forEach(el => {
+    el.querySelector(".optionMark").textContent = el.dataset.value === "a" ? "✔" : "✖";
+  });
+  document.querySelectorAll('[data-question="q2"] .option').forEach(el => {
+    el.querySelector(".optionMark").textContent = el.dataset.value === "a" ? "✔" : "✖";
+  });
+  document.querySelectorAll('[data-question="q3"] .option').forEach(el => {
+    el.querySelector(".optionMark").textContent = el.dataset.value === "a" ? "✔" : "✖";
+  });
+  document.querySelectorAll('[data-question="q4"] .option').forEach(el => {
+    el.querySelector(".optionMark").textContent = el.dataset.value === "c" ? "✔" : "✖";
+  });
+  document.querySelectorAll('[data-question="q5"] .option').forEach(el => {
+    el.querySelector(".optionMark").textContent = el.dataset.value === "a" ? "✔" : "✖";
+  });
+}
+
+async function checkQuiz() {
   clearHighlights();
+  restoreMarks();
 
   const fio = fioInput.value.trim();
 
-  if(!fio){
+  if (!fio) {
     fioInput.focus();
     fioInput.style.borderColor = "#d64545";
     fioInput.style.boxShadow = "0 0 0 4px rgba(214,69,69,.12)";
@@ -677,7 +693,7 @@ function checkQuiz(){
     const options = questionBlock.querySelectorAll(".option");
     const correctValue = answers[questionName];
 
-    if(selected){
+    if (selected) {
       answered++;
       payloadAnswers[questionName] = selected.value;
     } else {
@@ -687,25 +703,25 @@ function checkQuiz(){
     options.forEach(option => {
       const value = option.dataset.value;
 
-      if(selected){
-        if(value === correctValue && selected.value === correctValue){
+      if (selected) {
+        if (value === correctValue && selected.value === correctValue) {
           option.classList.add("correct");
-        } else if(value === selected.value && selected.value !== correctValue){
+        } else if (value === selected.value && selected.value !== correctValue) {
           option.classList.add("wrong");
           option.querySelector(".optionMark").textContent = "✖";
-        } else if(value === correctValue && selected.value !== correctValue){
+        } else if (value === correctValue && selected.value !== correctValue) {
           option.classList.add("missed");
           option.querySelector(".optionMark").textContent = "✔";
         }
       }
     });
 
-    if(selected && selected.value === correctValue){
+    if (selected && selected.value === correctValue) {
       score++;
     }
   });
 
-  if(answered < 5){
+  if (answered < 5) {
     resultCard.innerHTML = `
       <div class="resultMain" style="color:#c98a18;">Вы ответили не на все вопросы</div>
       <div class="resultSub">Заполнено: ${answered} из 5. Ответьте на все вопросы, чтобы получить итоговый результат.</div>
@@ -718,15 +734,15 @@ function checkQuiz(){
   let stateClass = "";
   let stateText = "";
 
-  if(score === 5){
+  if (score === 5) {
     message = "Отличный результат. Все ответы верные.";
     stateClass = "pass";
     stateText = "Тест пройден";
-  } else if(score >= 4){
+  } else if (score >= 4) {
     message = "Хороший результат. Есть небольшие ошибки.";
     stateClass = "pass";
     stateText = "Тест пройден";
-  } else if(score === 3){
+  } else if (score === 3) {
     message = "Неплохо, но часть материала стоит повторить.";
     stateClass = "warn";
     stateText = "Нужна доработка";
@@ -740,9 +756,10 @@ function checkQuiz(){
     <div class="resultMain">Ваш результат: ${score} из 5</div>
     <div class="resultSub">${message}</div>
     <div class="resultState ${stateClass}">${stateText}</div>
+    <div class="resultSub" id="sendStatus" style="margin-top:10px;">Отправка результата...</div>
   `;
 
-  sendToGoogleSheets({
+  const ok = await sendToGoogleSheets({
     fio,
     score,
     total: 5,
@@ -753,28 +770,23 @@ function checkQuiz(){
     q4: payloadAnswers.q4,
     q5: payloadAnswers.q5
   });
+
+  const sendStatus = document.getElementById("sendStatus");
+  if (sendStatus) {
+    sendStatus.textContent = ok
+      ? "Результат успешно отправлен в таблицу"
+      : "Не удалось отправить результат в таблицу";
+    sendStatus.style.color = ok ? "#1f9d55" : "#d64545";
+  }
 }
 
-function resetQuiz(){
+function resetQuiz() {
   form.reset();
   clearHighlights();
+  restoreMarks();
 
   fioInput.style.borderColor = "#cfe2ef";
   fioInput.style.boxShadow = "none";
-
-  document.querySelectorAll(".optionMark").forEach(mark => {
-    const parent = mark.closest(".option");
-    if(parent.dataset.value === "a" || parent.dataset.value === "c"){
-      // временно не меняем, ниже восстановим по вопросам
-    }
-  });
-
-  // Восстановление символов по правильным ответам
-  document.querySelectorAll('[data-question="q1"] .option').forEach(el => el.querySelector(".optionMark").textContent = el.dataset.value === "a" ? "✔" : "✖");
-  document.querySelectorAll('[data-question="q2"] .option').forEach(el => el.querySelector(".optionMark").textContent = el.dataset.value === "a" ? "✔" : "✖");
-  document.querySelectorAll('[data-question="q3"] .option').forEach(el => el.querySelector(".optionMark").textContent = el.dataset.value === "a" ? "✔" : "✖");
-  document.querySelectorAll('[data-question="q4"] .option').forEach(el => el.querySelector(".optionMark").textContent = el.dataset.value === "c" ? "✔" : "✖");
-  document.querySelectorAll('[data-question="q5"] .option').forEach(el => el.querySelector(".optionMark").textContent = el.dataset.value === "a" ? "✔" : "✖");
 
   resultCard.innerHTML = `
     <div class="resultMain">Ваш результат появится здесь</div>
@@ -782,19 +794,19 @@ function resetQuiz(){
   `;
 }
 
-async function sendToGoogleSheets(data){
-  if(!scriptURL || scriptURL.includes("PASTE_YOUR_GOOGLE_APPS_SCRIPT_WEBAPP_URL_HERE")){
-    console.log("Apps Script URL не указан");
-    return;
+async function sendToGoogleSheets(data) {
+  if (!scriptURL) {
+    console.log("URL Apps Script не указан");
+    return false;
   }
 
   submitBtn.classList.add("sending");
   submitBtn.disabled = true;
 
-  try{
-    await fetch(scriptURL, {
+  try {
+    const response = await fetch(scriptURL, {
       method: "POST",
-      mode: "cors",
+      redirect: "follow",
       headers: {
         "Content-Type": "text/plain;charset=utf-8"
       },
@@ -804,13 +816,21 @@ async function sendToGoogleSheets(data){
         submittedAt: new Date().toLocaleString("ru-RU")
       })
     });
-  } catch(error){
+
+    const text = await response.text();
+    console.log("Ответ Apps Script:", text);
+
+    return response.ok;
+  } catch (error) {
     console.error("Ошибка отправки:", error);
+    return false;
   } finally {
     submitBtn.classList.remove("sending");
     submitBtn.disabled = false;
   }
 }
+
+restoreMarks();
 </script>
 
 </body>
